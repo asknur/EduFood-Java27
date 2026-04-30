@@ -1,0 +1,214 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-roles-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+  - changeSet:
+      id: 2-create-users-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 3-create-users-roles-join-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_users_roles_user
+                    references: users(id)
+              - column:
+                  name: role_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_users_roles_role
+                    references: roles(id)
+        - addPrimaryKey:
+            tableName: users_roles
+            columnNames: user_id, role_id
+            constraintName: pk_users_roles
+
+  - changeSet:
+      id: 4-create-restaurant-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: restaurant
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 5-create-dishes-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: dishes
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1024)
+              - column:
+                  name: price
+                  type: DECIMAL(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restaurant_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_dishes_restaurant
+                    references: restaurant(id)
+  - changeSet:
+      id: 6-create-orders-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_orders_user
+                    references: users(id)
+              - column:
+                  name: total_price
+                  type: DECIMAL(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 7-create-order-items-table
+      author: Askar
+      changes:
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_order
+                    references: orders(id)
+              - column:
+                  name: dish_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_dish
+                    references: dishes(id)
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 8-insert-initial-roles
+      author: Askar
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "ROLE_USER"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: "ROLE_ADMIN"
